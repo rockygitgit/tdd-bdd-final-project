@@ -228,5 +228,5 @@ class Product(db.Model):
         :rtype: list
 
         """
-        logger.info("Processing category query for %s ...", category.name)
+    #    logger.info("Processing category query for %s ...", category.name)
         return cls.query.filter(cls.category == category)

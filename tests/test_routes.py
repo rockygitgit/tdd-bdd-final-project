@@ -134,15 +134,15 @@ class TestProductRoutes(TestCase):
         # Uncomment this code once READ is implemented
         #
 
-        # # Check that the location header was correct
-        # response = self.client.get(location)
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # new_product = response.get_json()
-        # self.assertEqual(new_product["name"], test_product.name)
-        # self.assertEqual(new_product["description"], test_product.description)
-        # self.assertEqual(Decimal(new_product["price"]), test_product.price)
-        # self.assertEqual(new_product["available"], test_product.available)
-        # self.assertEqual(new_product["category"], test_product.category.name)
+        # Check that the location header was correct
+        response = self.client.get(location)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        new_product = response.get_json()
+        self.assertEqual(new_product["name"], test_product.name)
+        self.assertEqual(new_product["description"], test_product.description)
+        self.assertEqual(Decimal(new_product["price"]), test_product.price)
+        self.assertEqual(new_product["available"], test_product.available)
+        self.assertEqual(new_product["category"], test_product.category.name)
 
     def test_create_product_with_no_name(self):
         """It should not Create a Product without a name"""
@@ -185,6 +185,102 @@ class TestProductRoutes(TestCase):
         response = self.client.get(BASE_URL+"/"+str(0))
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_product(self):
+        """It should update a Product"""
+        test_product = self._create_products(1)[0]
+        logging.debug("Test Product: %s", test_product.serialize())
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        test_product = response.get_json()
+        response = self.client.get(BASE_URL+"/"+str(test_product['id']))
+
+        test_product['desscription']="testing"
+
+        response = self.client.put(BASE_URL+"/"+str(test_product['id']),json=test_product)
+        update_product=response.get_json()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(update_product['description'], test_product['description'])
+        self.assertEqual(update_product['name'], test_product['name'])
+        self.assertEqual(update_product['price'], test_product['price'])
+
+    def test_update_product_not_found(self):
+        """It should get no Product"""
+        response = self.client.put(BASE_URL+"/"+str(0))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+    def test_delete_product(self):
+        """It should delete a Product"""
+        test_product = self._create_products(1)[0]
+        logging.debug("Test Product: %s", test_product.serialize())
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        test_product = response.get_json()
+
+        response = self.client.delete(BASE_URL+"/"+str(test_product['id']))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        response = self.client.get(BASE_URL+"/"+str(test_product['id']))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+    def test_delete_product_not_found(self):
+        """It should delete with no Product"""
+        response = self.client.delete(BASE_URL+"/"+str(0))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_all_products(self):
+        """It should get all Products"""
+        test_products = self._create_products(3)
+
+        response = self.client.get(BASE_URL)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(3, len(response.get_json()))
+
+    def test_query_by_name(self):
+        """It should get Products by name"""
+        test_products = self._create_products(3)
+
+        test_product=test_products[1]
+
+        response = self.client.get(BASE_URL,query_string=f"name={test_product.name}")
+
+        find_products=response.get_json()
+        for find_product in find_products : 
+            self.assertEqual(test_product.name, find_product['name'])
+
+    def test_query_by_category(self):
+        """It should get Products by category"""
+        test_products = self._create_products(3)
+
+        test_product=test_products[1]
+
+        print(test_product.category.name)
+        response = self.client.get(BASE_URL,query_string=f"category={test_product.category.name}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        find_products=response.get_json()
+        print(find_products)
+        for find_product in find_products : 
+            self.assertEqual(test_product.category.name, find_product['category'])
+
+    def test_query_by_availability(self):
+        """It should get Products by availability"""
+        test_products = self._create_products(3)
+
+        test_product=test_products[1]
+
+        print(test_product.available)
+        response = self.client.get(BASE_URL,query_string=f"available={test_product.available}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        find_products=response.get_json()
+        print(find_products)
+        for find_product in find_products : 
+            self.assertEqual(test_product.available, find_product['available'])
+
 
     ######################################################################
     # Utility functions

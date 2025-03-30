@@ -101,6 +101,38 @@ def create_products():
 #
 # PLACE YOUR CODE TO LIST ALL PRODUCTS HERE
 #
+@app.route("/products", methods=["GET"])
+def get_all_products():
+    """
+    read all Products
+    This endpoint will read all Products
+    """
+    app.logger.info("Request to read all Products...")
+
+    name = request.args.get("name")
+    category = request.args.get("category")
+    available = request.args.get("available")
+
+    if name :
+        app.logger.info("Find by name")
+        products = Product.find_by_name(name)    
+    elif category :
+        app.logger.info("Find by catetory")
+        print(category)
+        products = Product.find_by_category(category)    
+    elif available :
+        app.logger.info("Find by availability")
+        print(available)
+        products = Product.find_by_availability(available)    
+    else :
+        app.logger.info("Find all")
+        products = Product.all()
+
+    pro_list = list()
+    for product in products:
+        pro_list.append(product.serialize())
+
+    return jsonify(pro_list), status.HTTP_200_OK
 
 ######################################################################
 # R E A D   A   P R O D U C T
@@ -134,6 +166,32 @@ def get_products(product_id):
 #
 # PLACE YOUR CODE TO UPDATE A PRODUCT HERE
 #
+@app.route("/products/<int:product_id>", methods=["PUT"])
+def update_products(product_id):
+    """
+    update a Product by id
+    This endpoint will read a Producte
+    """
+    app.logger.info("Request to read a Product...")
+
+    product = Product.find(product_id)
+    if not product:
+        abort(status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found.")
+
+    app.logger.info("Product with id [%s] find!", product_id)
+
+    data = request.get_json()
+    app.logger.info("Processing: %s", data)
+    update_product = Product()
+    update_product.deserialize(data)
+
+
+    product.description = update_product.description
+    product.update()
+
+    message = product.serialize()
+
+    return jsonify(message), status.HTTP_200_OK
 
 ######################################################################
 # D E L E T E   A   P R O D U C T
@@ -143,3 +201,20 @@ def get_products(product_id):
 #
 # PLACE YOUR CODE TO DELETE A PRODUCT HERE
 #
+@app.route("/products/<int:product_id>", methods=["DELETE"])
+def delete_products(product_id):
+    """
+    delete a Product by id
+    This endpoint will read a Producte
+    """
+    app.logger.info("Request to delete a Product...")
+
+    product = Product.find(product_id)
+    if not product:
+        abort(status.HTTP_404_NOT_FOUND, f"Product with id '{product_id}' was not found.")
+
+    app.logger.info("Product with id [%s] find! Delete it", product_id)
+
+    product.delete();
+
+    return "", status.HTTP_204_NO_CONTENT
