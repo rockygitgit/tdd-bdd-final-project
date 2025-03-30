@@ -167,6 +167,25 @@ class TestProductRoutes(TestCase):
     # ADD YOUR TEST CASES HERE
     #
 
+    def test_get_product(self):
+        """It should get a Product"""
+        test_product = self._create_products(1)[0]
+        logging.debug("Test Product: %s", test_product.serialize())
+        response = self.client.post(BASE_URL, json=test_product.serialize())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        data = response.get_json()
+        response = self.client.get(BASE_URL+"/"+str(data['id']))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(data, response.get_json())
+
+    def test_get_product_not_found(self):
+        """It should get no Product"""
+        response = self.client.get(BASE_URL+"/"+str(0))
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     ######################################################################
     # Utility functions
     ######################################################################

@@ -204,23 +204,6 @@ class Product(db.Model):
         return cls.query.filter(cls.name == name)
 
     @classmethod
-    def find_by_price(cls, price: Decimal) -> list:
-        """Returns all Products with the given price
-
-        :param price: the price to search for
-        :type name: float
-
-        :return: a collection of Products with that price
-        :rtype: list
-
-        """
-        logger.info("Processing price query for %s ...", price)
-        price_value = price
-        if isinstance(price, str):
-            price_value = Decimal(price.strip(' "'))
-        return cls.query.filter(cls.price == price_value)
-
-    @classmethod
     def find_by_availability(cls, available: bool = True) -> list:
         """Returns all Products by their availability
 
