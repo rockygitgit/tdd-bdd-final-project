@@ -113,22 +113,22 @@ def get_all_products():
     category = request.args.get("category")
     available = request.args.get("available")
 
-    if name :
+    if name:
         app.logger.info("Find by name")
-        products = Product.find_by_name(name)    
-    elif category :
+        products = Product.find_by_name(name)
+    elif category:
         app.logger.info("Find by catetory")
         print(category)
-        products = Product.find_by_category(category)    
-    elif available :
+        products = Product.find_by_category(category)
+    elif available:
         app.logger.info("Find by availability")
         print(available)
-        products = Product.find_by_availability(available)    
-    else :
+        products = Product.find_by_availability(available)
+    else:
         app.logger.info("Find all")
         products = Product.all()
 
-    pro_list = list()
+    pro_list = []
     for product in products:
         pro_list.append(product.serialize())
 
@@ -141,6 +141,8 @@ def get_all_products():
 #
 # PLACE YOUR CODE HERE TO READ A PRODUCT
 #
+
+
 @app.route("/products/<int:product_id>", methods=["GET"])
 def get_products(product_id):
     """
@@ -166,6 +168,8 @@ def get_products(product_id):
 #
 # PLACE YOUR CODE TO UPDATE A PRODUCT HERE
 #
+
+
 @app.route("/products/<int:product_id>", methods=["PUT"])
 def update_products(product_id):
     """
@@ -185,7 +189,6 @@ def update_products(product_id):
     update_product = Product()
     update_product.deserialize(data)
 
-
     product.description = update_product.description
     product.update()
 
@@ -201,6 +204,8 @@ def update_products(product_id):
 #
 # PLACE YOUR CODE TO DELETE A PRODUCT HERE
 #
+
+
 @app.route("/products/<int:product_id>", methods=["DELETE"])
 def delete_products(product_id):
     """
@@ -215,6 +220,6 @@ def delete_products(product_id):
 
     app.logger.info("Product with id [%s] find! Delete it", product_id)
 
-    product.delete();
+    product.delete()
 
     return "", status.HTTP_204_NO_CONTENT
