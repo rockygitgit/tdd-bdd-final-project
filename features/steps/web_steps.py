@@ -75,6 +75,14 @@ def step_impl(context, element_name):
     element = context.driver.find_element(By.ID, element_id)
     assert(element.get_attribute('value') == u'')
 
+
+@then(u'I should not see "{data}" in result')
+def step_impl(context,data):
+    element_id = "search_results"
+    element = context.driver.find_element(By.ID, element_id)
+    assert(data not in element.text)
+
+
 ##################################################################
 # These two function simulate copy and paste
 ##################################################################
