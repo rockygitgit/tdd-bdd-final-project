@@ -60,16 +60,13 @@ Scenario: Update a Product
     And I should see "Cloths" in the "Category" dropdown
     And I should see "120.50" in the "Price" field
 
-Scenario: Update a Product
+Scenario: Delete a Product
     When I visit the "Home Page"
     And I set the "Name" to "Shoes"
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "Shoes" in the "Name" field
     And I should see "Blue shoes" in the "Description" field
-    When I change "Description" to "Desc for test"
-    And I press the "Update" button
-    Then I should see the message "Success"
     When I copy the "Id" field
     And I press the "Clear" button
     And I paste the "Id" field
@@ -87,5 +84,39 @@ Scenario: List all Products
     Then I should see the message "Success"
     And I should see "Shoes" in the results
     And I should see "Hat" in the results
+
+Scenario: Search by category
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I select "Food" in the "Category" dropdown
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Big Mac" in the results
+    And I should not see "Sheets" in the results
+    And I should not see "Shoes" in the results
+    And I should not see "Hat" in the results
+
+Scenario: Search by availability
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I select "True" in the "Available" dropdown
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Big Mac" in the results
+    And I should see "Sheets" in the results
+    And I should not see "Shoes" in the results
+    And I should see "Hat" in the results
+
+Scenario: Search by name
+    When I visit the "Home Page"
+    And I set the "Name" to "Shoes"
+    And I select "True" in the "Available" dropdown
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should not see "Big Mac" in the results
+    And I should not see "Sheets" in the results
+    And I should see "Shoes" in the results
+    And I should not see "Hat" in the results
+
 
 
