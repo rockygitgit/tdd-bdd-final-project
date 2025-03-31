@@ -78,7 +78,14 @@ Scenario: Update a Product
     When I press the "Clear" button
     And I press the "Search" button
     Then I should see the message "Success"
-    And I should not see "Shoes" in result 
+    And I should not see "Shoes" in the results 
 
+Scenario: List all Products
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Shoes" in the results
+    And I should see "Hat" in the results
 
 

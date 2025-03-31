@@ -76,12 +76,21 @@ def step_impl(context, element_name):
     assert(element.get_attribute('value') == u'')
 
 
-@then(u'I should not see "{data}" in result')
+@then(u'I should not see "{data}" in the results')
 def step_impl(context,data):
     element_id = "search_results"
     element = context.driver.find_element(By.ID, element_id)
     assert(data not in element.text)
 
+@then(u'I should see "{data}" in the results')
+def step_impl(context,data):
+    element_id = "search_results"
+    element = context.driver.find_element(By.ID, element_id)
+    print("results element:"+str(element.tag_name))
+    table_texts = [cell.text for cell in element.find_elements(By.TAG_NAME, "td")]
+
+    print (table_texts)
+    assert(data in table_texts)
 
 ##################################################################
 # These two function simulate copy and paste
